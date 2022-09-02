@@ -2458,8 +2458,7 @@ dependencies = [
 [[package]]
 name = "tendermint"
 version = "0.23.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "467f82178deeebcd357e1273a0c0b77b9a8a0313ef7c07074baebe99d87851f4"
+source = "git+https://github.com/meka-dev/tendermint-rs?branch=v0.34.19-mekatek#7cfc6e148f57d5e729e7d4314426af9f55804b91"
 dependencies = [
  "async-trait",
  "bytes 1.2.1",
@@ -2489,8 +2488,7 @@ dependencies = [
 [[package]]
 name = "tendermint-config"
 version = "0.23.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2d42ee0abc27ef5fc34080cce8d43c189950d331631546e7dfb983b6274fa327"
+source = "git+https://github.com/meka-dev/tendermint-rs?branch=v0.34.19-mekatek#7cfc6e148f57d5e729e7d4314426af9f55804b91"
 dependencies = [
  "flex-error",
  "serde",
@@ -2503,8 +2501,7 @@ dependencies = [
 [[package]]
 name = "tendermint-p2p"
 version = "0.23.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "547ff0499270c64ffc164985d8e190d7d7b32bae5eca68fab2b22c5bcaddf295"
+source = "git+https://github.com/meka-dev/tendermint-rs?branch=v0.34.19-mekatek#7cfc6e148f57d5e729e7d4314426af9f55804b91"
 dependencies = [
  "aead 0.4.3",
  "chacha20poly1305",
@@ -2530,8 +2527,7 @@ dependencies = [
 [[package]]
 name = "tendermint-proto"
 version = "0.23.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "68ce80bf536476db81ecc9ebab834dc329c9c1509a694f211a73858814bfe023"
+source = "git+https://github.com/meka-dev/tendermint-rs?branch=v0.34.19-mekatek#7cfc6e148f57d5e729e7d4314426af9f55804b91"
 dependencies = [
  "bytes 1.2.1",
  "flex-error",
@@ -2548,8 +2544,7 @@ dependencies = [
 [[package]]
 name = "tendermint-rpc"
 version = "0.23.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6f14aafe3528a0f75e9f3f410b525617b2de16c4b7830a21f717eee62882ec60"
+source = "git+https://github.com/meka-dev/tendermint-rs?branch=v0.34.19-mekatek#7cfc6e148f57d5e729e7d4314426af9f55804b91"
 dependencies = [
  "async-trait",
  "bytes 1.2.1",
@@ -2581,8 +2576,7 @@ dependencies = [
 [[package]]
 name = "tendermint-std-ext"
 version = "0.23.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "22565badd78ad048c6d960aacd88282dc11d2934ecf196768c9740ebf6e20f67"
+source = "git+https://github.com/meka-dev/tendermint-rs?branch=v0.34.19-mekatek#7cfc6e148f57d5e729e7d4314426af9f55804b91"
 
 [[package]]
 name = "termcolor"

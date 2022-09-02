@@ -24,6 +24,8 @@ pub enum Request {
     /// Sign the given message
     SignProposal(amino_types::SignProposalRequest),
     SignVote(amino_types::SignVoteRequest),
+    SignMekatekBuild(amino_types::SignMekatekBuildRequest),
+    SignMekatekChallenge(amino_types::SignMekatekChallengeRequest),
     ShowPublicKey(amino_types::PubKeyRequest),
 
     // PingRequest is a PrivValidatorSocket message to keep the connection alive.
@@ -78,6 +80,30 @@ impl Request {
                         }),
                     }))
                 }
+                Some(proto::privval::message::Sum::SignMekatekBuildRequest(req)) => Ok(
+                    Request::SignMekatekBuild(amino_types::SignMekatekBuildRequest {
+                        build: req.build.map(|build| amino_types::mekatek::MekatekBuild {
+                            chain_id: build.chain_id,
+                            height: build.height,
+                            validator_address: build.validator_addr,
+                            max_bytes: build.max_bytes,
+                            max_gas: build.max_gas,
+                            txs_hash: build.txs_hash,
+                            signature: vec![],
+                        }),
+                    }),
+                ),
+                Some(proto::privval::message::Sum::SignMekatekChallengeRequest(req)) => Ok(
+                    Request::SignMekatekChallenge(amino_types::SignMekatekChallengeRequest {
+                        challenge: req.challenge.map(|challenge| {
+                            amino_types::mekatek::MekatekChallenge {
+                                chain_id: challenge.chain_id,
+                                challenge: challenge.challenge,
+                                signature: vec![],
+                            }
+                        }),
+                    }),
+                ),
                 Some(proto::privval::message::Sum::PubKeyRequest(_)) => {
                     Ok(Request::ShowPublicKey(amino_types::PubKeyRequest {}))
                 }
@@ -95,6 +121,15 @@ impl Request {
             } else if amino_prefix == *amino_types::proposal::AMINO_PREFIX {
                 let req = amino_types::SignProposalRequest::decode(msg.as_ref())?;
                 Ok(Request::SignProposal(req))
+            } else if amino_prefix == *amino_types::mekatek::SIGN_MEKATEK_BUILD_REQUEST_AMINO_PREFIX
+            {
+                let req = amino_types::SignMekatekBuildRequest::decode(msg.as_ref())?;
+                Ok(Request::SignMekatekBuild(req))
+            } else if amino_prefix
+                == *amino_types::mekatek::SIGN_MEKATEK_CHALLENGE_REQUEST_AMINO_PREFIX
+            {
+                let req = amino_types::SignMekatekChallengeRequest::decode(msg.as_ref())?;
+                Ok(Request::SignMekatekChallenge(req))
             } else if amino_prefix == *amino_types::ed25519::AMINO_PREFIX {
                 let req = amino_types::PubKeyRequest::decode(msg.as_ref())?;
                 Ok(Request::ShowPublicKey(req))
@@ -114,6 +149,8 @@ pub enum Response {
     /// Signature response
     SignedVote(amino_types::SignedVoteResponse),
     SignedProposal(amino_types::SignedProposalResponse),
+    SignedMekatekBuildResponse(amino_types::SignedMekatekBuildResponse),
+    SignedMekatekChallengeResponse(amino_types::SignedMekatekChallengeResponse),
     Ping(amino_types::PingResponse),
     PublicKey(amino_types::PubKeyResponse),
 }
@@ -155,6 +192,36 @@ impl Response {
                         },
                     )
                 }
+                Response::SignedMekatekBuildResponse(resp) => {
+                    proto::privval::message::Sum::SignedMekatekBuildResponse(
+                        proto::privval::SignedMekatekBuildResponse {
+                            build: resp.build.map(|build| proto::privval::MekatekBuild {
+                                chain_id: build.chain_id,
+                                height: build.height,
+                                validator_addr: build.validator_address,
+                                max_bytes: build.max_bytes,
+                                max_gas: build.max_gas,
+                                txs_hash: build.txs_hash,
+                                signature: build.signature,
+                            }),
+                            error: None,
+                        },
+                    )
+                }
+                Response::SignedMekatekChallengeResponse(resp) => {
+                    proto::privval::message::Sum::SignedMekatekChallengeResponse(
+                        proto::privval::SignedMekatekChallengeResponse {
+                            challenge: resp.challenge.map(|challenge| {
+                                proto::privval::MekatekChallenge {
+                                    chain_id: challenge.chain_id,
+                                    challenge: challenge.challenge,
+                                    signature: challenge.signature,
+                                }
+                            }),
+                            error: None,
+                        },
+                    )
+                }
                 Response::Ping(_) => {
                     proto::privval::message::Sum::PingResponse(proto::privval::PingResponse {})
                 }
@@ -175,6 +242,8 @@ impl Response {
             match self {
                 Response::SignedProposal(sp) => sp.encode(&mut buf)?,
                 Response::SignedVote(sv) => sv.encode(&mut buf)?,
+                Response::SignedMekatekBuildResponse(resp) => resp.encode(&mut buf)?,
+                Response::SignedMekatekChallengeResponse(resp) => resp.encode(&mut buf)?,
                 Response::Ping(ping) => ping.encode(&mut buf)?,
                 Response::PublicKey(pk) => pk.encode(&mut buf)?,
             }

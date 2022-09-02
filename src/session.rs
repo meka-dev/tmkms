@@ -106,6 +106,8 @@ impl Session {
         let response = match request {
             Request::SignProposal(req) => self.sign(req)?,
             Request::SignVote(req) => self.sign(req)?,
+            Request::SignMekatekBuild(req) => self.sign(req)?,
+            Request::SignMekatekChallenge(req) => self.sign(req)?,
             // non-signable requests:
             Request::ReplyPing(_) => Response::Ping(PingResponse {}),
             Request::ShowPublicKey(ref req) => self.get_public_key(req)?,
@@ -141,9 +143,21 @@ impl Session {
                 panic!("chain '{}' missing from registry!", &self.config.chain_id);
             });
 
-        if let Some(remote_err) = self.update_consensus_state(chain, &request)? {
-            // In the event of double signing we send a response to notify the validator
-            return Ok(request.build_response(Some(remote_err)));
+        let msg_type = request
+            .msg_type()
+            .ok_or_else(|| format_err!(ProtocolError, "no message type for this request"))?;
+
+        let is_consensus_msg = match msg_type {
+            SignedMsgType::MekatekRegisterChallenge => false,
+            SignedMsgType::MekatekBuildBlockRequest => false,
+            _ => true,
+        };
+
+        if is_consensus_msg {
+            if let Some(remote_err) = self.update_consensus_state(chain, &request)? {
+                // In the event of double signing we send a response to notify the validator
+                return Ok(request.build_response(Some(remote_err)));
+            }
         }
 
         let mut to_sign = vec![];
@@ -158,7 +172,12 @@ impl Session {
         // TODO(ismail): figure out which key to use here instead of taking the only key
         let signature = chain.keyring.sign_ed25519(None, &to_sign)?;
 
-        self.log_signing_request(&request, started_at).unwrap();
+        if is_consensus_msg {
+            self.log_signing_request(&request, started_at).unwrap();
+        } else {
+            self.log_mekatek_signing_request(msg_type, started_at)
+        }
+
         request.set_signature(&signature);
 
         Ok(request.build_response(None))
@@ -257,6 +276,17 @@ impl Session {
 
         Ok(())
     }
+
+    /// Write an INFO logline about a signing a Mekatek request
+    fn log_mekatek_signing_request(&self, msg_type: SignedMsgType, started_at: Instant) {
+        info!(
+            "[{}@{}] signed {:?} ({} ms)",
+            &self.config.chain_id,
+            &self.config.addr,
+            msg_type,
+            started_at.elapsed().as_millis(),
+        );
+    }
 }
 
 /// Parse the consensus state from an incoming request
@@ -277,6 +307,12 @@ where
         SignedMsgType::Proposal => 0,
         SignedMsgType::PreVote => 1,
         SignedMsgType::PreCommit => 2,
+        _ => {
+            return Err(format_err!(
+                InvalidMessageError,
+                "unexpected signed message type"
+            ))?
+        }
     };
 
     Ok((msg_type, consensus_state))

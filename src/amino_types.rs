@@ -5,6 +5,7 @@
 
 pub mod block_id;
 pub mod ed25519;
+pub mod mekatek;
 pub mod message;
 pub mod ping;
 pub mod proposal;
@@ -20,6 +21,10 @@ pub use self::{
     ed25519::{
         PubKeyRequest, PubKeyResponse, AMINO_NAME as PUBKEY_AMINO_NAME,
         AMINO_PREFIX as PUBKEY_PREFIX,
+    },
+    mekatek::{
+        SignMekatekBuildRequest, SignMekatekChallengeRequest, SignedMekatekBuildResponse,
+        SignedMekatekChallengeResponse,
     },
     ping::{PingRequest, PingResponse, AMINO_NAME as PING_AMINO_NAME, AMINO_PREFIX as PING_PREFIX},
     proposal::{

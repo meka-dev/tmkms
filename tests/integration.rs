@@ -543,3 +543,120 @@ fn test_handle_and_sign_ping_pong() {
         PingResponse::decode(resp.as_ref()).expect("decoding ping response failed");
     });
 }
+
+#[test]
+fn test_handle_and_sign_mekatek_build_block_request() {
+    let chain_id = "test_chain_id";
+    let pub_key = test_ed25519_keypair().public;
+
+    ProtocolTester::apply(|mut pt| {
+        use sha2::{Digest, Sha256};
+
+        let txs = vec!["send the moneyz".as_bytes().to_vec()];
+        let mut h = Sha256::new();
+
+        for tx in txs {
+            h.update(&tx);
+        }
+
+        let sign_req = amino_types::mekatek::SignMekatekBuildRequest {
+            build: Some(amino_types::mekatek::MekatekBuild {
+                chain_id: chain_id.to_string(),
+                height: 1,
+                validator_address: "foobar".to_string(),
+                max_bytes: 123,
+                max_gas: 12345,
+                txs_hash: h.finalize().to_vec(),
+                signature: vec![],
+            }),
+        };
+        let mut req_buf = vec![];
+        sign_req.encode(&mut req_buf).unwrap();
+        pt.write_all(&req_buf).unwrap();
+
+        // receive response:
+        let mut resp_buf = vec![0u8; 1024];
+        pt.read(&mut resp_buf).unwrap();
+
+        let actual_len = extract_actual_len(&resp_buf).unwrap();
+        let mut sized_resp_buf = vec![0u8; actual_len as usize];
+        sized_resp_buf.copy_from_slice(&resp_buf[..actual_len as usize]);
+
+        let sign_resp =
+            amino_types::mekatek::SignedMekatekBuildResponse::decode(sized_resp_buf.as_ref())
+                .expect("decoding failed");
+        let mut sign_bytes: Vec<u8> = vec![];
+
+        sign_req
+            .sign_bytes(
+                chain_id.parse().unwrap(),
+                ProtocolVersion::Legacy,
+                &mut sign_bytes,
+            )
+            .unwrap();
+
+        let build: amino_types::mekatek::MekatekBuild = sign_resp
+            .build
+            .expect("request should be embedded int the response but none was found");
+
+        let signature: Vec<u8> = build.signature;
+        assert_ne!(signature.len(), 0);
+
+        let sig = ed25519::Signature::try_from(signature.as_slice()).unwrap();
+        let msg: &[u8] = sign_bytes.as_slice();
+
+        assert!(pub_key.verify(msg, &sig).is_ok());
+    });
+}
+
+#[test]
+fn test_handle_and_sign_mekatek_register_challenge() {
+    let chain_id = "test_chain_id";
+    let pub_key = test_ed25519_keypair().public;
+
+    ProtocolTester::apply(|mut pt| {
+        let sign_req = amino_types::mekatek::SignMekatekChallengeRequest {
+            challenge: Some(amino_types::mekatek::MekatekChallenge {
+                chain_id: chain_id.to_string(),
+                challenge: "foobarbaz".as_bytes().to_vec(),
+                signature: vec![],
+            }),
+        };
+        let mut req_buf = vec![];
+        sign_req.encode(&mut req_buf).unwrap();
+        pt.write_all(&req_buf).unwrap();
+
+        // receive response:
+        let mut resp_buf = vec![0u8; 1024];
+        pt.read(&mut resp_buf).unwrap();
+
+        let actual_len = extract_actual_len(&resp_buf).unwrap();
+        let mut sized_resp_buf = vec![0u8; actual_len as usize];
+        sized_resp_buf.copy_from_slice(&resp_buf[..actual_len as usize]);
+
+        let sign_resp =
+            amino_types::mekatek::SignedMekatekChallengeResponse::decode(sized_resp_buf.as_ref())
+                .expect("decoding failed");
+        let mut sign_bytes: Vec<u8> = vec![];
+
+        sign_req
+            .sign_bytes(
+                chain_id.parse().unwrap(),
+                ProtocolVersion::Legacy,
+                &mut sign_bytes,
+            )
+            .unwrap();
+
+        let challenge: amino_types::mekatek::MekatekChallenge = sign_resp
+            .challenge
+            .expect("request should be embedded int the response but none was found");
+
+        let signature: Vec<u8> = challenge.signature;
+        assert_ne!(signature.len(), 0);
+
+        let sig = ed25519::Signature::try_from(signature.as_slice()).unwrap();
+        let msg: &[u8] = sign_bytes.as_slice();
+
+        assert!(pub_key.verify(msg, &sig).is_ok());
+    });
+}
