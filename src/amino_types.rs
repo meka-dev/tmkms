@@ -14,6 +14,7 @@ pub mod time;
 pub mod validate;
 pub mod version;
 pub mod vote;
+pub mod mekatek;
 
 pub use self::{
     block_id::{BlockId, CanonicalBlockId, CanonicalPartSetHeader, PartsSetHeader},
@@ -35,6 +36,9 @@ pub use self::{
         SignVoteRequest, SignedVoteResponse, Vote, AMINO_NAME as VOTE_AMINO_NAME,
         AMINO_PREFIX as VOTE_PREFIX,
     },
+    mekatek::{
+        SignMekatekBuildBlockRequest, SignMekatekBuildBlockRequestResponse
+    }
 };
 
 use crate::rpc;

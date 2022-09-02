@@ -35,6 +35,9 @@ pub enum SignedMsgType {
 
     /// Proposals
     Proposal,
+
+    /// MEKATEK
+    MekatekBuildBlockRequest,
 }
 
 impl SignedMsgType {
@@ -45,6 +48,8 @@ impl SignedMsgType {
             SignedMsgType::PreCommit => 0x02,
             // Proposals
             SignedMsgType::Proposal => 0x20,
+            // MEKATEK
+            SignedMsgType::MekatekBuildBlockRequest => 0x95
         }
     }
 
@@ -54,6 +59,7 @@ impl SignedMsgType {
             0x01 => Ok(SignedMsgType::PreVote),
             0x02 => Ok(SignedMsgType::PreCommit),
             0x20 => Ok(SignedMsgType::Proposal),
+            0x95 => Ok(SignedMsgType::MekatekBuildBlockRequest),
             _ => Err(DecodeError::new("Invalid vote type")),
         }
     }

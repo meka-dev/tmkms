@@ -24,6 +24,7 @@ pub enum Request {
     /// Sign the given message
     SignProposal(amino_types::SignProposalRequest),
     SignVote(amino_types::SignVoteRequest),
+    SignMekatekBuildBlockRequest(amino_types::SignMekatekBuildBlockRequest),
     ShowPublicKey(amino_types::PubKeyRequest),
 
     // PingRequest is a PrivValidatorSocket message to keep the connection alive.
@@ -78,6 +79,15 @@ impl Request {
                         }),
                     }))
                 }
+                Some(proto::privval::message::Sum::SignMekatekBuildBlockRequest(req)) => {
+                    Ok(Request::SignMekatekBuildBlockRequest(amino_types::SignMekatekBuildBlockRequest {
+                        req: Some(amino_types::mekatek::BuildBlockRequest {
+                            chain_id: req.chain_id,
+                            height: req.height,
+                            signature: vec![],
+                        })
+                    }))
+                }
                 Some(proto::privval::message::Sum::PubKeyRequest(_)) => {
                     Ok(Request::ShowPublicKey(amino_types::PubKeyRequest {}))
                 }
@@ -95,6 +105,9 @@ impl Request {
             } else if amino_prefix == *amino_types::proposal::AMINO_PREFIX {
                 let req = amino_types::SignProposalRequest::decode(msg.as_ref())?;
                 Ok(Request::SignProposal(req))
+            } else if amino_prefix == *amino_types::mekatek::AMINO_PREFIX {
+                let req = amino_types::SignMekatekBuildBlockRequest::decode(msg.as_ref())?;
+                Ok(Request::SignMekatekBuildBlockRequest(req))
             } else if amino_prefix == *amino_types::ed25519::AMINO_PREFIX {
                 let req = amino_types::PubKeyRequest::decode(msg.as_ref())?;
                 Ok(Request::ShowPublicKey(req))
@@ -114,6 +127,7 @@ pub enum Response {
     /// Signature response
     SignedVote(amino_types::SignedVoteResponse),
     SignedProposal(amino_types::SignedProposalResponse),
+    SignMekatekBuildBlockRequestResponse(amino_types::SignMekatekBuildBlockRequestResponse),
     Ping(amino_types::PingResponse),
     PublicKey(amino_types::PubKeyResponse),
 }
@@ -155,6 +169,17 @@ impl Response {
                         },
                     )
                 }
+                Response::SignMekatekBuildBlockRequestResponse(resp) => {
+                    proto::privval::message::Sum::SignMekatekBuildBlockRequestResponse(
+                        proto::privval::SignMekatekBuildBlockRequestResponse {
+                            signature: match resp.req {
+                                Some(req) => req.signature,
+                                _ => vec![],
+                            },
+                            error: None,
+                        },
+                    )
+                }
                 Response::Ping(_) => {
                     proto::privval::message::Sum::PingResponse(proto::privval::PingResponse {})
                 }
@@ -175,6 +200,7 @@ impl Response {
             match self {
                 Response::SignedProposal(sp) => sp.encode(&mut buf)?,
                 Response::SignedVote(sv) => sv.encode(&mut buf)?,
+                Response::SignMekatekBuildBlockRequestResponse(resp) => resp.encode(&mut buf)?,
                 Response::Ping(ping) => ping.encode(&mut buf)?,
                 Response::PublicKey(pk) => pk.encode(&mut buf)?,
             }
