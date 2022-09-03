@@ -554,6 +554,10 @@ fn test_handle_and_sign_mekatek_build_block_request() {
             req: Some(amino_types::mekatek::BuildBlockRequest {
                 chain_id: chain_id.to_string(),
                 height: 1,
+                validator_address: "foobar".to_string(),
+                max_bytes: 123,
+                max_gas: 12345,
+                txs: vec!["send money".as_bytes().to_vec()],
                 signature: vec![],
             }),
         };

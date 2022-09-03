@@ -86,6 +86,10 @@ impl Request {
                             req: Some(amino_types::mekatek::BuildBlockRequest {
                                 chain_id: req.chain_id,
                                 height: req.height,
+                                validator_address: req.validator_addr,
+                                max_bytes: req.max_bytes,
+                                max_gas: req.max_gas,
+                                txs: req.txs,
                                 signature: vec![],
                             }),
                         },

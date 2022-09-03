@@ -307,7 +307,12 @@ where
         SignedMsgType::Proposal => 0,
         SignedMsgType::PreVote => 1,
         SignedMsgType::PreCommit => 2,
-        _ => return Err(format_err!(PanicError, "unexpected signed message type"))?,
+        _ => {
+            return Err(format_err!(
+                InvalidMessageError,
+                "unexpected signed message type"
+            ))?
+        }
     };
 
     Ok((msg_type, consensus_state))
