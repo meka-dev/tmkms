@@ -1,25 +1,26 @@
 use super::{
-    block_id::{BlockId, CanonicalBlockId, CanonicalPartSetHeader, ParseId},
     compute_prefix,
     remote_error::RemoteError,
     signature::SignableMsg,
-    time::TimeMsg,
     validate::{self, ConsensusMessage, Error::*},
-    ParseChainId, SignedMsgType, TendermintRequest,
+    SignedMsgType, TendermintRequest,
 };
 use crate::{config::validator::ProtocolVersion, rpc};
 use bytes::BufMut;
-use bytes_v0_5::BytesMut as BytesMutV05;
 use ed25519_dalek as ed25519;
 use once_cell::sync::Lazy;
-use prost::Message as _;
-use prost_amino::{error::EncodeError, Message};
+use prost_amino::error::EncodeError;
 use prost_amino_derive::Message;
-use tendermint::{block, chain, consensus, error::Error};
-use tendermint_proto::types as proto_types;
+use tendermint::{chain, consensus};
 
-pub const AMINO_NAME: &str = "tendermint/remotesigner/SignMekatekBuildBlockRequest";
-pub static AMINO_PREFIX: Lazy<Vec<u8>> = Lazy::new(|| compute_prefix(AMINO_NAME));
+pub const BUILD_BLOCK_REQUEST_AMINO_NAME: &str =
+    "tendermint/remotesigner/SignMekatekBuildBlockRequest";
+pub static BUILD_BLOCK_REQUEST_AMINO_PREFIX: Lazy<Vec<u8>> =
+    Lazy::new(|| compute_prefix(BUILD_BLOCK_REQUEST_AMINO_NAME));
+
+//
+// Build block request
+//
 
 #[derive(Clone, PartialEq, Message)]
 pub struct BuildBlockRequest {
@@ -50,8 +51,8 @@ pub struct SignMekatekBuildBlockRequestResponse {
 impl SignableMsg for SignMekatekBuildBlockRequest {
     fn sign_bytes<B>(
         &self,
-        chain_id: chain::Id,
-        protocol_version: ProtocolVersion,
+        _chain_id: chain::Id,
+        _protocol_version: ProtocolVersion,
         sign_bytes: &mut B,
     ) -> Result<bool, EncodeError>
     where
@@ -101,8 +102,10 @@ impl SignableMsg for SignMekatekBuildBlockRequest {
 
 impl ConsensusMessage for BuildBlockRequest {
     fn validate_basic(&self) -> Result<(), validate::Error> {
-        // TODO: Some basic validation
-        return Ok(())
+        if self.height < 0 {
+            return Err(NegativeHeight);
+        }
+        return Ok(());
     }
 }
 
@@ -124,7 +127,117 @@ impl TendermintRequest for SignMekatekBuildBlockRequest {
     }
 }
 
+//
+// Register challenge
+//
 
+pub const REGISTER_CHALLENGE_AMINO_NAME: &str =
+    "tendermint/remotesigner/SignMekatekRegisterChallenge";
+pub static REGISTER_CHALLENGE_AMINO_PREFIX: Lazy<Vec<u8>> =
+    Lazy::new(|| compute_prefix(REGISTER_CHALLENGE_AMINO_NAME));
+
+#[derive(Clone, PartialEq, Message)]
+pub struct RegisterChallenge {
+    #[prost_amino(string, tag = "1")]
+    pub chain_id: String,
+    #[prost_amino(bytes)]
+    pub challenge: Vec<u8>,
+    #[prost_amino(bytes)]
+    pub signature: Vec<u8>,
+}
+
+#[derive(Clone, PartialEq, Message)]
+#[amino_name = "tendermint/remotesigner/SignMekatekRegisterChallenge"]
+pub struct SignMekatekRegisterChallenge {
+    #[prost_amino(message, tag = "1")]
+    pub rc: Option<RegisterChallenge>,
+}
+
+#[derive(Clone, PartialEq, Message)]
+#[amino_name = "tendermint/remotesigner/SignMekatekRegisterChallengeResponse"]
+pub struct SignMekatekRegisterChallengeResponse {
+    #[prost_amino(message, tag = "1")]
+    pub rc: Option<RegisterChallenge>,
+    #[prost_amino(message)]
+    pub err: Option<RemoteError>,
+}
+
+impl SignableMsg for SignMekatekRegisterChallenge {
+    fn sign_bytes<B>(
+        &self,
+        _chain_id: chain::Id,
+        _protocol_version: ProtocolVersion,
+        sign_bytes: &mut B,
+    ) -> Result<bool, EncodeError>
+    where
+        B: BufMut,
+    {
+        let mut sign_req = self.clone();
+
+        if let Some(ref mut rc) = sign_req.rc {
+            rc.signature = vec![];
+        }
+
+        let rc = sign_req.rc.unwrap();
+
+        sign_bytes.put_slice("register-challenge".as_bytes());
+        sign_bytes.put_u64_le(rc.chain_id.as_bytes().len() as u64);
+        sign_bytes.put_slice(rc.chain_id.as_bytes());
+        sign_bytes.put_slice(&rc.challenge);
+
+        Ok(true)
+    }
+
+    fn set_signature(&mut self, sig: &ed25519::Signature) {
+        if let Some(ref mut rc) = self.rc {
+            rc.signature = sig.as_ref().to_vec();
+        }
+    }
+
+    fn validate(&self) -> Result<(), validate::Error> {
+        match self.rc {
+            Some(ref rc) => rc.validate_basic(),
+            None => Err(MissingConsensusMessage),
+        }
+    }
+
+    fn consensus_state(&self) -> Option<consensus::State> {
+        None
+    }
+
+    fn height(&self) -> Option<i64> {
+        None
+    }
+
+    fn msg_type(&self) -> Option<SignedMsgType> {
+        Some(SignedMsgType::MekatekRegisterChallenge)
+    }
+}
+
+impl ConsensusMessage for RegisterChallenge {
+    fn validate_basic(&self) -> Result<(), validate::Error> {
+        // TODO: Some basic validation
+        return Ok(());
+    }
+}
+
+impl TendermintRequest for SignMekatekRegisterChallenge {
+    fn build_response(self, error: Option<RemoteError>) -> rpc::Response {
+        let response = if let Some(e) = error {
+            SignMekatekRegisterChallengeResponse {
+                rc: None,
+                err: Some(e),
+            }
+        } else {
+            SignMekatekRegisterChallengeResponse {
+                rc: self.rc,
+                err: None,
+            }
+        };
+
+        rpc::Response::SignMekatekRegisterChallengeResponse(response)
+    }
+}
 
 // #[cfg(test)]
 // mod tests {

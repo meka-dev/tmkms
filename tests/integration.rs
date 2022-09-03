@@ -545,7 +545,7 @@ fn test_handle_and_sign_ping_pong() {
 }
 
 #[test]
-fn test_handle_and_sign_mekatek() {
+fn test_handle_and_sign_mekatek_build_block_request() {
     let chain_id = "test_chain_id";
     let pub_key = test_ed25519_keypair().public;
 
@@ -555,7 +555,7 @@ fn test_handle_and_sign_mekatek() {
                 chain_id: chain_id.to_string(),
                 height: 1,
                 signature: vec![],
-            })
+            }),
         };
         let mut req_buf = vec![];
         sign_req.encode(&mut req_buf).unwrap();
@@ -569,21 +569,78 @@ fn test_handle_and_sign_mekatek() {
         let mut sized_resp_buf = vec![0u8; actual_len as usize];
         sized_resp_buf.copy_from_slice(&resp_buf[..actual_len as usize]);
 
-        let sign_resp = amino_types::mekatek::SignMekatekBuildBlockRequestResponse::decode(sized_resp_buf.as_ref()).expect("decoding failed");
+        let sign_resp = amino_types::mekatek::SignMekatekBuildBlockRequestResponse::decode(
+            sized_resp_buf.as_ref(),
+        )
+        .expect("decoding failed");
         let mut sign_bytes: Vec<u8> = vec![];
 
-        sign_req.sign_bytes(
-            chain_id.parse().unwrap(),
-            ProtocolVersion::Legacy,
-            &mut sign_bytes,
-        )
-        .unwrap();
+        sign_req
+            .sign_bytes(
+                chain_id.parse().unwrap(),
+                ProtocolVersion::Legacy,
+                &mut sign_bytes,
+            )
+            .unwrap();
 
         let req: amino_types::mekatek::BuildBlockRequest = sign_resp
             .req
             .expect("request should be embedded int the response but none was found");
 
         let signature: Vec<u8> = req.signature;
+        assert_ne!(signature.len(), 0);
+
+        let sig = ed25519::Signature::try_from(signature.as_slice()).unwrap();
+        let msg: &[u8] = sign_bytes.as_slice();
+
+        assert!(pub_key.verify(msg, &sig).is_ok());
+    });
+}
+
+#[test]
+fn test_handle_and_sign_mekatek_register_challenge() {
+    let chain_id = "test_chain_id";
+    let pub_key = test_ed25519_keypair().public;
+
+    ProtocolTester::apply(|mut pt| {
+        let sign_req = amino_types::mekatek::SignMekatekRegisterChallenge {
+            rc: Some(amino_types::mekatek::RegisterChallenge {
+                chain_id: chain_id.to_string(),
+                challenge: "foobarbaz".as_bytes().to_vec(),
+                signature: vec![],
+            }),
+        };
+        let mut req_buf = vec![];
+        sign_req.encode(&mut req_buf).unwrap();
+        pt.write_all(&req_buf).unwrap();
+
+        // receive response:
+        let mut resp_buf = vec![0u8; 1024];
+        pt.read(&mut resp_buf).unwrap();
+
+        let actual_len = extract_actual_len(&resp_buf).unwrap();
+        let mut sized_resp_buf = vec![0u8; actual_len as usize];
+        sized_resp_buf.copy_from_slice(&resp_buf[..actual_len as usize]);
+
+        let sign_resp = amino_types::mekatek::SignMekatekRegisterChallengeResponse::decode(
+            sized_resp_buf.as_ref(),
+        )
+        .expect("decoding failed");
+        let mut sign_bytes: Vec<u8> = vec![];
+
+        sign_req
+            .sign_bytes(
+                chain_id.parse().unwrap(),
+                ProtocolVersion::Legacy,
+                &mut sign_bytes,
+            )
+            .unwrap();
+
+        let rc: amino_types::mekatek::RegisterChallenge = sign_resp
+            .rc
+            .expect("request should be embedded int the response but none was found");
+
+        let signature: Vec<u8> = rc.signature;
         assert_ne!(signature.len(), 0);
 
         let sig = ed25519::Signature::try_from(signature.as_slice()).unwrap();
