@@ -95,6 +95,17 @@ impl Request {
                         },
                     ))
                 }
+                Some(proto::privval::message::Sum::SignMekatekRegisterChallengeRequest(rc)) => {
+                    Ok(Request::SignMekatekRegisterChallenge(
+                        amino_types::SignMekatekRegisterChallenge {
+                            rc: Some(amino_types::mekatek::RegisterChallenge {
+                                chain_id: rc.chain_id,
+                                challenge: rc.challenge,
+                                signature: vec![],
+                            }),
+                        },
+                    ))
+                }
                 Some(proto::privval::message::Sum::PubKeyRequest(_)) => {
                     Ok(Request::ShowPublicKey(amino_types::PubKeyRequest {}))
                 }
