@@ -495,7 +495,7 @@ checksum = "20b42021d8488665b1a0d9748f1f81df7235362d194f44481e2e61bf376b77b4"
 dependencies = [
  "prost",
  "prost-types",
- "tendermint-proto 0.23.9 (registry+https://github.com/rust-lang/crates.io-index)",
+ "tendermint-proto",
 ]
 
 [[package]]
@@ -2482,8 +2482,7 @@ dependencies = [
 [[package]]
 name = "tendermint"
 version = "0.23.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "467f82178deeebcd357e1273a0c0b77b9a8a0313ef7c07074baebe99d87851f4"
+source = "git+https://github.com/meka-dev/tendermint-rs?branch=v0.34.19-mekatek#ee2b660340145ea7c200926ea0f78741ee62323f"
 dependencies = [
  "async-trait",
  "bytes 1.2.1",
@@ -2505,7 +2504,7 @@ dependencies = [
  "signature",
  "subtle",
  "subtle-encoding",
- "tendermint-proto 0.23.9 (registry+https://github.com/rust-lang/crates.io-index)",
+ "tendermint-proto",
  "time 0.3.11",
  "zeroize",
 ]
@@ -2513,8 +2512,7 @@ dependencies = [
 [[package]]
 name = "tendermint-config"
 version = "0.23.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2d42ee0abc27ef5fc34080cce8d43c189950d331631546e7dfb983b6274fa327"
+source = "git+https://github.com/meka-dev/tendermint-rs?branch=v0.34.19-mekatek#ee2b660340145ea7c200926ea0f78741ee62323f"
 dependencies = [
  "flex-error",
  "serde",
@@ -2527,8 +2525,7 @@ dependencies = [
 [[package]]
 name = "tendermint-p2p"
 version = "0.23.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "547ff0499270c64ffc164985d8e190d7d7b32bae5eca68fab2b22c5bcaddf295"
+source = "git+https://github.com/meka-dev/tendermint-rs?branch=v0.34.19-mekatek#ee2b660340145ea7c200926ea0f78741ee62323f"
 dependencies = [
  "aead 0.4.3",
  "chacha20poly1305",
@@ -2545,7 +2542,7 @@ dependencies = [
  "signature",
  "subtle",
  "tendermint",
- "tendermint-proto 0.23.9 (registry+https://github.com/rust-lang/crates.io-index)",
+ "tendermint-proto",
  "tendermint-std-ext",
  "x25519-dalek",
  "zeroize",
@@ -2554,24 +2551,7 @@ dependencies = [
 [[package]]
 name = "tendermint-proto"
 version = "0.23.9"
-dependencies = [
- "bytes 1.2.1",
- "flex-error",
- "num-derive",
- "num-traits",
- "prost",
- "prost-types",
- "serde",
- "serde_bytes",
- "subtle-encoding",
- "time 0.3.11",
-]
-
-[[package]]
-name = "tendermint-proto"
-version = "0.23.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "68ce80bf536476db81ecc9ebab834dc329c9c1509a694f211a73858814bfe023"
+source = "git+https://github.com/meka-dev/tendermint-rs?branch=v0.34.19-mekatek#ee2b660340145ea7c200926ea0f78741ee62323f"
 dependencies = [
  "bytes 1.2.1",
  "flex-error",
@@ -2588,8 +2568,7 @@ dependencies = [
 [[package]]
 name = "tendermint-rpc"
 version = "0.23.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6f14aafe3528a0f75e9f3f410b525617b2de16c4b7830a21f717eee62882ec60"
+source = "git+https://github.com/meka-dev/tendermint-rs?branch=v0.34.19-mekatek#ee2b660340145ea7c200926ea0f78741ee62323f"
 dependencies = [
  "async-trait",
  "bytes 1.2.1",
@@ -2608,7 +2587,7 @@ dependencies = [
  "subtle-encoding",
  "tendermint",
  "tendermint-config",
- "tendermint-proto 0.23.9 (registry+https://github.com/rust-lang/crates.io-index)",
+ "tendermint-proto",
  "thiserror",
  "time 0.3.11",
  "tokio",
@@ -2621,8 +2600,7 @@ dependencies = [
 [[package]]
 name = "tendermint-std-ext"
 version = "0.23.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "22565badd78ad048c6d960aacd88282dc11d2934ecf196768c9740ebf6e20f67"
+source = "git+https://github.com/meka-dev/tendermint-rs?branch=v0.34.19-mekatek#ee2b660340145ea7c200926ea0f78741ee62323f"
 
 [[package]]
 name = "termcolor"
@@ -2768,7 +2746,7 @@ dependencies = [
  "tendermint",
  "tendermint-config",
  "tendermint-p2p",
- "tendermint-proto 0.23.9",
+ "tendermint-proto",
  "tendermint-rpc",
  "thiserror",
  "url 2.2.2",
