@@ -550,14 +550,23 @@ fn test_handle_and_sign_mekatek_build_block_request() {
     let pub_key = test_ed25519_keypair().public;
 
     ProtocolTester::apply(|mut pt| {
-        let sign_req = amino_types::mekatek::SignMekatekBuildBlockRequest {
-            req: Some(amino_types::mekatek::BuildBlockRequest {
+        use sha2::{Digest, Sha256};
+
+        let txs = vec!["send the moneyz".as_bytes().to_vec()];
+        let mut h = Sha256::new();
+
+        for tx in txs {
+            h.update(&tx);
+        }
+
+        let sign_req = amino_types::mekatek::SignMekatekBuildRequest {
+            build: Some(amino_types::mekatek::MekatekBuild {
                 chain_id: chain_id.to_string(),
                 height: 1,
                 validator_address: "foobar".to_string(),
                 max_bytes: 123,
                 max_gas: 12345,
-                txs: vec!["send money".as_bytes().to_vec()],
+                txs_hash: h.finalize().to_vec(),
                 signature: vec![],
             }),
         };
@@ -573,10 +582,9 @@ fn test_handle_and_sign_mekatek_build_block_request() {
         let mut sized_resp_buf = vec![0u8; actual_len as usize];
         sized_resp_buf.copy_from_slice(&resp_buf[..actual_len as usize]);
 
-        let sign_resp = amino_types::mekatek::SignMekatekBuildBlockRequestResponse::decode(
-            sized_resp_buf.as_ref(),
-        )
-        .expect("decoding failed");
+        let sign_resp =
+            amino_types::mekatek::SignedMekatekBuildResponse::decode(sized_resp_buf.as_ref())
+                .expect("decoding failed");
         let mut sign_bytes: Vec<u8> = vec![];
 
         sign_req
@@ -587,11 +595,11 @@ fn test_handle_and_sign_mekatek_build_block_request() {
             )
             .unwrap();
 
-        let req: amino_types::mekatek::BuildBlockRequest = sign_resp
-            .req
+        let build: amino_types::mekatek::MekatekBuild = sign_resp
+            .build
             .expect("request should be embedded int the response but none was found");
 
-        let signature: Vec<u8> = req.signature;
+        let signature: Vec<u8> = build.signature;
         assert_ne!(signature.len(), 0);
 
         let sig = ed25519::Signature::try_from(signature.as_slice()).unwrap();
@@ -607,8 +615,8 @@ fn test_handle_and_sign_mekatek_register_challenge() {
     let pub_key = test_ed25519_keypair().public;
 
     ProtocolTester::apply(|mut pt| {
-        let sign_req = amino_types::mekatek::SignMekatekRegisterChallenge {
-            rc: Some(amino_types::mekatek::RegisterChallenge {
+        let sign_req = amino_types::mekatek::SignMekatekChallengeRequest {
+            challenge: Some(amino_types::mekatek::MekatekChallenge {
                 chain_id: chain_id.to_string(),
                 challenge: "foobarbaz".as_bytes().to_vec(),
                 signature: vec![],
@@ -626,10 +634,9 @@ fn test_handle_and_sign_mekatek_register_challenge() {
         let mut sized_resp_buf = vec![0u8; actual_len as usize];
         sized_resp_buf.copy_from_slice(&resp_buf[..actual_len as usize]);
 
-        let sign_resp = amino_types::mekatek::SignMekatekRegisterChallengeResponse::decode(
-            sized_resp_buf.as_ref(),
-        )
-        .expect("decoding failed");
+        let sign_resp =
+            amino_types::mekatek::SignedMekatekChallengeResponse::decode(sized_resp_buf.as_ref())
+                .expect("decoding failed");
         let mut sign_bytes: Vec<u8> = vec![];
 
         sign_req
@@ -640,11 +647,11 @@ fn test_handle_and_sign_mekatek_register_challenge() {
             )
             .unwrap();
 
-        let rc: amino_types::mekatek::RegisterChallenge = sign_resp
-            .rc
+        let challenge: amino_types::mekatek::MekatekChallenge = sign_resp
+            .challenge
             .expect("request should be embedded int the response but none was found");
 
-        let signature: Vec<u8> = rc.signature;
+        let signature: Vec<u8> = challenge.signature;
         assert_ne!(signature.len(), 0);
 
         let sig = ed25519::Signature::try_from(signature.as_slice()).unwrap();

@@ -23,8 +23,8 @@ pub use self::{
         AMINO_PREFIX as PUBKEY_PREFIX,
     },
     mekatek::{
-        SignMekatekBuildBlockRequest, SignMekatekBuildBlockRequestResponse,
-        SignMekatekRegisterChallenge, SignMekatekRegisterChallengeResponse,
+        SignMekatekBuildRequest, SignMekatekChallengeRequest, SignedMekatekBuildResponse,
+        SignedMekatekChallengeResponse,
     },
     ping::{PingRequest, PingResponse, AMINO_NAME as PING_AMINO_NAME, AMINO_PREFIX as PING_PREFIX},
     proposal::{

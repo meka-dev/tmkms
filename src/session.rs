@@ -106,8 +106,8 @@ impl Session {
         let response = match request {
             Request::SignProposal(req) => self.sign(req)?,
             Request::SignVote(req) => self.sign(req)?,
-            Request::SignMekatekBuildBlockRequest(req) => self.sign(req)?,
-            Request::SignMekatekRegisterChallenge(req) => self.sign(req)?,
+            Request::SignMekatekBuild(req) => self.sign(req)?,
+            Request::SignMekatekChallenge(req) => self.sign(req)?,
             // non-signable requests:
             Request::ReplyPing(_) => Response::Ping(PingResponse {}),
             Request::ShowPublicKey(ref req) => self.get_public_key(req)?,
