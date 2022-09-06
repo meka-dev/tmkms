@@ -2458,7 +2458,7 @@ dependencies = [
 [[package]]
 name = "tendermint"
 version = "0.23.9"
-source = "git+https://github.com/meka-dev/tendermint-rs?branch=v0.34.19-mekatek#7cfc6e148f57d5e729e7d4314426af9f55804b91"
+source = "git+https://github.com/meka-dev/tendermint-rs?tag=v0.34.19-mekatek.1#7cfc6e148f57d5e729e7d4314426af9f55804b91"
 dependencies = [
  "async-trait",
  "bytes 1.2.1",
@@ -2488,7 +2488,7 @@ dependencies = [
 [[package]]
 name = "tendermint-config"
 version = "0.23.9"
-source = "git+https://github.com/meka-dev/tendermint-rs?branch=v0.34.19-mekatek#7cfc6e148f57d5e729e7d4314426af9f55804b91"
+source = "git+https://github.com/meka-dev/tendermint-rs?tag=v0.34.19-mekatek.1#7cfc6e148f57d5e729e7d4314426af9f55804b91"
 dependencies = [
  "flex-error",
  "serde",
@@ -2501,7 +2501,7 @@ dependencies = [
 [[package]]
 name = "tendermint-p2p"
 version = "0.23.9"
-source = "git+https://github.com/meka-dev/tendermint-rs?branch=v0.34.19-mekatek#7cfc6e148f57d5e729e7d4314426af9f55804b91"
+source = "git+https://github.com/meka-dev/tendermint-rs?tag=v0.34.19-mekatek.1#7cfc6e148f57d5e729e7d4314426af9f55804b91"
 dependencies = [
  "aead 0.4.3",
  "chacha20poly1305",
@@ -2527,7 +2527,7 @@ dependencies = [
 [[package]]
 name = "tendermint-proto"
 version = "0.23.9"
-source = "git+https://github.com/meka-dev/tendermint-rs?branch=v0.34.19-mekatek#7cfc6e148f57d5e729e7d4314426af9f55804b91"
+source = "git+https://github.com/meka-dev/tendermint-rs?tag=v0.34.19-mekatek.1#7cfc6e148f57d5e729e7d4314426af9f55804b91"
 dependencies = [
  "bytes 1.2.1",
  "flex-error",
@@ -2544,7 +2544,7 @@ dependencies = [
 [[package]]
 name = "tendermint-rpc"
 version = "0.23.9"
-source = "git+https://github.com/meka-dev/tendermint-rs?branch=v0.34.19-mekatek#7cfc6e148f57d5e729e7d4314426af9f55804b91"
+source = "git+https://github.com/meka-dev/tendermint-rs?tag=v0.34.19-mekatek.1#7cfc6e148f57d5e729e7d4314426af9f55804b91"
 dependencies = [
  "async-trait",
  "bytes 1.2.1",
@@ -2576,7 +2576,7 @@ dependencies = [
 [[package]]
 name = "tendermint-std-ext"
 version = "0.23.9"
-source = "git+https://github.com/meka-dev/tendermint-rs?branch=v0.34.19-mekatek#7cfc6e148f57d5e729e7d4314426af9f55804b91"
+source = "git+https://github.com/meka-dev/tendermint-rs?tag=v0.34.19-mekatek.1#7cfc6e148f57d5e729e7d4314426af9f55804b91"
 
 [[package]]
 name = "termcolor"
@@ -2682,7 +2682,7 @@ checksum = "cda74da7e1a664f795bb1f8a87ec406fb89a02522cf6e50620d016add6dbbf5c"
 
 [[package]]
 name = "tmkms"
-version = "0.12.2"
+version = "0.12.2-mekatek.1"
 dependencies = [
  "abscissa_core",
  "abscissa_tokio",
