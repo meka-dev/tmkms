@@ -78,11 +78,11 @@ byteorder = "1"
 rand = "0.7"
 
 [patch.crates-io]
-tendermint = { git = "https://github.com/meka-dev/tendermint-rs", branch = "v0.34.19-mekatek" }
-tendermint-config = { git = "https://github.com/meka-dev/tendermint-rs", branch = "v0.34.19-mekatek" }
-tendermint-rpc = { git = "https://github.com/meka-dev/tendermint-rs", branch = "v0.34.19-mekatek" }
-tendermint-proto = { git = "https://github.com/meka-dev/tendermint-rs", branch = "v0.34.19-mekatek" }
-tendermint-p2p = { git = "https://github.com/meka-dev/tendermint-rs", branch = "v0.34.19-mekatek" }
+tendermint = { git = "https://github.com/meka-dev/tendermint-rs", branch = "v0.34.21-mekatek" }
+tendermint-config = { git = "https://github.com/meka-dev/tendermint-rs", branch = "v0.34.21-mekatek" }
+tendermint-rpc = { git = "https://github.com/meka-dev/tendermint-rs", branch = "v0.34.21-mekatek" }
+tendermint-proto = { git = "https://github.com/meka-dev/tendermint-rs", branch = "v0.34.21-mekatek" }
+tendermint-p2p = { git = "https://github.com/meka-dev/tendermint-rs", branch = "v0.34.21-mekatek" }
 
 [features]
 softsign = []
