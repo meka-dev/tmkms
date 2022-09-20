@@ -2458,7 +2458,7 @@ dependencies = [
 [[package]]
 name = "tendermint"
 version = "0.23.9"
-source = "git+https://github.com/meka-dev/tendermint-rs?tag=v0.34.19-mekatek.1#7cfc6e148f57d5e729e7d4314426af9f55804b91"
+source = "git+https://github.com/meka-dev/tendermint-rs?tag=v0.34.21-mekatek.1#b4b7d317ca1c04e2fe6b21d47783715999c49401"
 dependencies = [
  "async-trait",
  "bytes 1.2.1",
@@ -2488,7 +2488,7 @@ dependencies = [
 [[package]]
 name = "tendermint-config"
 version = "0.23.9"
-source = "git+https://github.com/meka-dev/tendermint-rs?tag=v0.34.19-mekatek.1#7cfc6e148f57d5e729e7d4314426af9f55804b91"
+source = "git+https://github.com/meka-dev/tendermint-rs?tag=v0.34.21-mekatek.1#b4b7d317ca1c04e2fe6b21d47783715999c49401"
 dependencies = [
  "flex-error",
  "serde",
@@ -2501,7 +2501,7 @@ dependencies = [
 [[package]]
 name = "tendermint-p2p"
 version = "0.23.9"
-source = "git+https://github.com/meka-dev/tendermint-rs?tag=v0.34.19-mekatek.1#7cfc6e148f57d5e729e7d4314426af9f55804b91"
+source = "git+https://github.com/meka-dev/tendermint-rs?tag=v0.34.21-mekatek.1#b4b7d317ca1c04e2fe6b21d47783715999c49401"
 dependencies = [
  "aead 0.4.3",
  "chacha20poly1305",
@@ -2527,7 +2527,7 @@ dependencies = [
 [[package]]
 name = "tendermint-proto"
 version = "0.23.9"
-source = "git+https://github.com/meka-dev/tendermint-rs?tag=v0.34.19-mekatek.1#7cfc6e148f57d5e729e7d4314426af9f55804b91"
+source = "git+https://github.com/meka-dev/tendermint-rs?tag=v0.34.21-mekatek.1#b4b7d317ca1c04e2fe6b21d47783715999c49401"
 dependencies = [
  "bytes 1.2.1",
  "flex-error",
@@ -2544,7 +2544,7 @@ dependencies = [
 [[package]]
 name = "tendermint-rpc"
 version = "0.23.9"
-source = "git+https://github.com/meka-dev/tendermint-rs?tag=v0.34.19-mekatek.1#7cfc6e148f57d5e729e7d4314426af9f55804b91"
+source = "git+https://github.com/meka-dev/tendermint-rs?tag=v0.34.21-mekatek.1#b4b7d317ca1c04e2fe6b21d47783715999c49401"
 dependencies = [
  "async-trait",
  "bytes 1.2.1",
@@ -2576,7 +2576,7 @@ dependencies = [
 [[package]]
 name = "tendermint-std-ext"
 version = "0.23.9"
-source = "git+https://github.com/meka-dev/tendermint-rs?tag=v0.34.19-mekatek.1#7cfc6e148f57d5e729e7d4314426af9f55804b91"
+source = "git+https://github.com/meka-dev/tendermint-rs?tag=v0.34.21-mekatek.1#b4b7d317ca1c04e2fe6b21d47783715999c49401"
 
 [[package]]
 name = "termcolor"
